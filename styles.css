@@ -100,6 +100,11 @@ main {
         0 9px 38px rgba(0, 0, 0, 0.58);
     position: relative;
     overflow: hidden;
+    touch-action: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .editable-board {
@@ -117,6 +122,11 @@ main {
     border-radius: 7px;
     cursor: pointer;
     user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
     transition: transform 0.5s ease;
     position: relative;
 }
@@ -145,9 +155,12 @@ main {
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.tile.odd:hover {
-    transform: scale(1.05);
-    box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.6);
+/* Only apply hover effects on devices that support hover (not touch screens) */
+@media (hover: hover) and (pointer: fine) {
+    .tile.odd:hover {
+        transform: scale(1.05);
+        box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.6);
+    }
 }
 
 .tile.even {
@@ -156,9 +169,11 @@ main {
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.tile.even:hover {
-    transform: scale(1.05);
-    box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.6);
+@media (hover: hover) and (pointer: fine) {
+    .tile.even:hover {
+        transform: scale(1.05);
+        box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.6);
+    }
 }
 
 .tile.dragging {
@@ -168,10 +183,16 @@ main {
 
 .tile.multi-selected {
     outline: 3px solid rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 4px 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .tile.animating {
     transition: transform 0.25s ease;
+}
+
+/* Better touch feedback for tiles */
+.tile:active {
+    opacity: 0.9;
 }
 
 .move-counter {
@@ -221,6 +242,9 @@ main {
     text-decoration: none;
     white-space: nowrap;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .btn-primary {
@@ -230,10 +254,18 @@ main {
     font-weight: 700;
 }
 
-.btn-primary:hover {
-    background: linear-gradient(135deg, var(--accent-odd-light) 0%, var(--accent-odd) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(43, 43, 168, 0.3);
+/* Add active state for mobile touch feedback */
+.btn-primary:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(43, 43, 168, 0.2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--accent-odd-light) 0%, var(--accent-odd) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(43, 43, 168, 0.3);
+    }
 }
 
 .btn-primary i {
@@ -247,11 +279,18 @@ main {
     font-weight: 600;
 }
 
-.btn-secondary:hover {
-    background: linear-gradient(135deg, var(--bg-medium) 0%, var(--bg-dark) 100%);
-    border: 1px solid var(--accent-odd);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(43, 43, 168, 0.2);
+.btn-secondary:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(43, 43, 168, 0.15);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, var(--bg-medium) 0%, var(--bg-dark) 100%);
+        border: 1px solid var(--accent-odd);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(43, 43, 168, 0.2);
+    }
 }
 
 .btn-secondary i {
@@ -264,11 +303,18 @@ main {
     font-weight: 600;
 }
 
-.btn-tertiary:hover {
-    background: linear-gradient(135deg, var(--accent-even-dark) 0%, var(--accent-even) 100%);
-    color: var(--bg-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(215, 107, 25, 0.3);
+.btn-tertiary:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(215, 107, 25, 0.2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-tertiary:hover {
+        background: linear-gradient(135deg, var(--accent-even-dark) 0%, var(--accent-even) 100%);
+        color: var(--bg-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(215, 107, 25, 0.3);
+    }
 }
 
 .btn-tertiary i {

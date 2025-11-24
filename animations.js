@@ -94,15 +94,19 @@ export class AnimationController {
 
     // Set up mouse and touch event handlers
     setupDragHandlers() {
+        // Prevent default touch behaviors on the board
+        this.boardElement.style.touchAction = 'none';
+        
         this.boardElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
         this.boardElement.addEventListener('mousemove', this.handleMouseMove.bind(this));
         this.boardElement.addEventListener('mouseup', this.handleMouseUp.bind(this));
         this.boardElement.addEventListener('mouseleave', this.handleMouseUp.bind(this));
 
-        // Touch screen support
+        // Touch screen support with passive: false to allow preventDefault
         this.boardElement.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
         this.boardElement.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        this.boardElement.addEventListener('touchend', this.handleTouchEnd.bind(this));
+        this.boardElement.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+        this.boardElement.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
     }
 
     // Handle mouse press on a tile
@@ -120,10 +124,13 @@ export class AnimationController {
 
     // Handle touch start on a tile
     handleTouchStart(e) {
+        // Prevent default to stop scrolling and other touch behaviors
+        e.preventDefault();
+        e.stopPropagation();
+        
         const tile = e.target.closest('.tile');
         if (!tile) return;
 
-        e.preventDefault();
         const touch = e.touches[0];
         const row = parseInt(tile.dataset.row);
         const col = parseInt(tile.dataset.col);
@@ -162,9 +169,14 @@ export class AnimationController {
     // Handle touch movement while dragging
     handleTouchMove(e) {
         if (!this.isDragging) return;
+        // Prevent scrolling while dragging
         e.preventDefault();
-        const touch = e.touches[0];
-        this.updateDrag(touch.clientX, touch.clientY);
+        e.stopPropagation();
+        
+        if (e.touches.length > 0) {
+            const touch = e.touches[0];
+            this.updateDrag(touch.clientX, touch.clientY);
+        }
     }
 
     // Update tile positions while dragging
@@ -225,6 +237,8 @@ export class AnimationController {
     // Handle touch end
     handleTouchEnd(e) {
         if (!this.isDragging) return;
+        e.preventDefault();
+        e.stopPropagation();
         this.endDrag();
     }
 
