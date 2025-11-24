@@ -29,6 +29,11 @@ class EditableBoard {
 
     // Set up the board and click handlers
     setupBoard() {
+        // Ensure touch-action is set on the board element
+        this.boardElement.style.touchAction = 'none';
+        this.boardElement.style.webkitUserSelect = 'none';
+        this.boardElement.style.userSelect = 'none';
+        
         this.attachListeners();
         this.setupResizeHandler();
         this.render();
@@ -88,9 +93,6 @@ class EditableBoard {
     }
 
     attachListeners() {
-        // Prevent default touch behaviors on the board
-        this.boardElement.style.touchAction = 'none';
-        
         // Mouse down handler
         this.boardElement.addEventListener('mousedown', (e) => {
             const tile = e.target.closest('.tile');
@@ -113,11 +115,17 @@ class EditableBoard {
 
         // Touch start handler
         this.boardElement.addEventListener('touchstart', (e) => {
+            console.log('Touch start detected', e.target);
+            const tile = e.target.closest('.tile');
+            if (!tile) {
+                console.log('No tile found');
+                return;
+            }
+            
+            console.log('Tile found, starting drag', tile.dataset.value);
+            // Only prevent default if we have a valid tile
             e.preventDefault();
             e.stopPropagation();
-            
-            const tile = e.target.closest('.tile');
-            if (!tile) return;
             
             const touch = e.touches[0];
             
@@ -131,6 +139,7 @@ class EditableBoard {
             this.initialTransform = tile.style.transform || '';
             
             tile.style.zIndex = '1000';
+            tile.style.opacity = '0.8';
         }, { passive: false });
 
         // Common drag handler for both mouse and touch
@@ -249,6 +258,7 @@ class EditableBoard {
         // Touch move handler
         document.addEventListener('touchmove', (e) => {
             if (!this.draggedElement) return;
+            console.log('Touch move');
             e.preventDefault();
             e.stopPropagation();
             
