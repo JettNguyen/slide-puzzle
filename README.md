@@ -1,4 +1,4 @@
-# [15 Slide Puzzle](https://jettnguyen.github.io/slide-puzzle/)
+# [15 Slide Puzzle](https://jettnguyen.github.io/Slide15/)
 
 A web-based 4x4 sliding number puzzle with animations, multi-tile movement, and a solver using the A* pathfinding algorithm.
 
