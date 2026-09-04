@@ -26,7 +26,6 @@ body {
     margin: 0;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 50%, var(--bg-light) 100%);
-    background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
     overscroll-behavior: none;
@@ -43,7 +42,7 @@ a {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 /* Layout */
@@ -64,6 +63,7 @@ a {
 }
 
 header {
+    width: 100%;
     text-align: center;
     margin-bottom: 10px;
 }
@@ -198,8 +198,15 @@ footer {
     opacity: 0.85;
 }
 
-.tile.selected {
+.tile.selected,
+.tile.drop-target {
     box-shadow: 0 0 0 3px var(--accent-even-dark), 4px 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.tile.empty-tile.drop-target,
+.tile.empty-tile.selected {
+    border-color: var(--accent-even-dark);
+    box-shadow: 0 0 0 3px var(--accent-even-dark);
 }
 
 .tile.moving {
@@ -679,7 +686,7 @@ footer {
 }
 
 .modal.hidden {
-    display: none;
+    display: none !important;
 }
 
 .modal-content {

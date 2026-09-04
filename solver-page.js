@@ -87,20 +87,16 @@ class EditableBoard {
         }
         placeTile(d.tile, this.layout, d.homeRow, d.homeCol, dx, dy);
 
-        // Swap with whatever tile the pointer is over. The dragged tile is hidden
-        // from hit-testing so we can see what's beneath it.
+        // Highlight the tile under the pointer; it gets swapped on release. The
+        // dragged tile is hidden from hit-testing so we can see what's beneath it.
         d.tile.style.pointerEvents = 'none';
         const under = document.elementFromPoint(e.clientX, e.clientY)?.closest('.tile');
         d.tile.style.pointerEvents = '';
-        if (under && under !== d.tile && this.el.contains(under)) {
-            if (under !== d.over) {
-                d.over = under;
-                this.swap(this.board.indexOf(d.value), Number(under.dataset.index));
-                this.sync();
-                placeTile(d.tile, this.layout, d.homeRow, d.homeCol, dx, dy);
-            }
-        } else {
-            d.over = null;
+        const over = under && under !== d.tile && this.el.contains(under) ? under : null;
+        if (over !== d.over) {
+            d.over?.classList.remove('drop-target');
+            over?.classList.add('drop-target');
+            d.over = over;
         }
     }
 
@@ -109,8 +105,13 @@ class EditableBoard {
         if (!d || e.pointerId !== d.pointerId) return;
         this.drag = null;
         d.tile.classList.remove('dragging');
-        if (d.moved) this.sync();
-        else this.tap(d.tile);
+        d.over?.classList.remove('drop-target');
+        if (!d.moved) {
+            this.tap(d.tile);
+            return;
+        }
+        if (d.over) this.swap(this.board.indexOf(d.value), Number(d.over.dataset.index));
+        this.sync();
     }
 
     tap(tile) {
