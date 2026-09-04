@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slide15 Solver</title>
+    <meta name="description" content="Find the shortest solution between any two 15-puzzle positions.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23d76b19'/%3E%3Ctext x='32' y='43' font-family='system-ui,sans-serif' font-size='32' font-weight='700' text-anchor='middle' fill='%232c3e50'%3E15%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header with navigation and color customization -->
+    <div class="container container-wide">
         <header>
-            <h1>Puzzle Solver</h1>
-            <p class="subtitle">Set up your puzzle and let the solver find the answer</p>
+            <h1>Solver</h1>
+            <p class="subtitle">Set up a start and a target, then find the shortest path between them.</p>
             <div class="header-controls">
                 <a href="index.html" class="btn btn-secondary btn-small">
-                    <i class="fas fa-arrow-left"></i> Back to Game
+                    <i class="fas fa-arrow-left"></i> Back to game
                 </a>
                 <button id="customize-colors-btn" class="btn btn-tertiary btn-small">
                     <i class="fas fa-palette"></i> Colors
@@ -24,205 +25,179 @@
         </header>
 
         <main>
-            <!-- Two side-by-side puzzle boards for editing -->
             <div class="solver-layout">
-                <div class="board-section">
-                    <h2>Initial State</h2>
-                    <p class="board-description">Drag tiles to edit the starting position</p>
+                <section class="board-section">
+                    <h2>Start</h2>
+                    <p class="board-description">Drag tiles onto each other to swap them, or tap two tiles.</p>
                     <div class="puzzle-wrapper">
                         <div id="initial-board" class="puzzle-board editable-board"></div>
                     </div>
                     <div class="board-controls">
                         <button id="reset-initial-btn" class="btn btn-secondary btn-small">
-                            <i class="fas fa-puzzle-piece"></i> Reset to Solved
+                            <i class="fas fa-rotate-left"></i> Solved
                         </button>
                         <button id="randomize-initial-btn" class="btn btn-secondary btn-small">
                             <i class="fas fa-dice"></i> Randomize
                         </button>
                     </div>
-                </div>
+                </section>
 
-                <div class="board-section">
-                    <h2>Target State</h2>
-                    <p class="board-description">Drag tiles to edit the desired arrangement</p>
+                <section class="board-section">
+                    <h2>Target</h2>
+                    <p class="board-description">Usually the solved board, but any arrangement works.</p>
                     <div class="puzzle-wrapper">
                         <div id="target-board" class="puzzle-board editable-board"></div>
                     </div>
                     <div class="board-controls">
                         <button id="reset-target-btn" class="btn btn-secondary btn-small">
-                            <i class="fas fa-puzzle-piece"></i> Reset to Solved
+                            <i class="fas fa-rotate-left"></i> Solved
                         </button>
                         <button id="swap-boards-btn" class="btn btn-secondary btn-small">
-                            <i class="fas fa-exchange-alt"></i> Swap Boards
+                            <i class="fas fa-right-left"></i> Swap boards
                         </button>
                     </div>
-                </div>
+                </section>
             </div>
 
-            <!-- Solution finder and step-by-step viewer -->
             <div class="solve-section">
-                <button id="solve-btn" class="btn btn-primary btn-large solve-button">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Find Solution</span>
+                <button id="solve-btn" class="btn btn-primary btn-large">
+                    <i class="fas fa-magnifying-glass"></i> Find solution
                 </button>
             </div>
 
-            <div id="solution-display" class="solution-display hidden">
-                <h2>Solution Found!</h2>
+            <section id="solution-display" class="solution-display hidden">
+                <h2>Solution</h2>
 
-                <div class="solution-demo">
-                    <h3>Step-by-Step Solution</h3>
-                    <div class="puzzle-wrapper solution-board-wrapper">
-                        <div id="solution-board" class="puzzle-board solution-board"></div>
-                    </div>
+                <div class="puzzle-wrapper">
+                    <div id="solution-board" class="puzzle-board solution-board"></div>
                 </div>
 
                 <div class="solution-controls">
+                    <div class="step-status">
+                        <span class="step-counter">Step <span id="current-step">0</span> of <span id="total-steps">0</span></span>
+                        <span id="move-text" class="move-text"></span>
+                    </div>
                     <div class="step-navigation">
-                        <button id="first-step-btn" class="btn btn-step" onclick="solverController.goToStep(0)" disabled>
-                            <i class="fas fa-fast-backward"></i> First
+                        <button id="first-step-btn" class="btn btn-secondary btn-step" disabled title="First">
+                            <i class="fas fa-backward-fast"></i>
                         </button>
-                        <button id="prev-step-btn" class="btn btn-step" onclick="solverController.previousStep()" disabled>
-                            <i class="fas fa-chevron-left"></i> Back
+                        <button id="prev-step-btn" class="btn btn-secondary btn-step" disabled title="Back">
+                            <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button id="play-solution-btn" class="btn btn-primary btn-step" onclick="solverController.togglePlay()">
+                        <button id="play-solution-btn" class="btn btn-primary btn-step btn-play">
                             <i class="fas fa-play"></i> Play
                         </button>
-                        <button id="next-step-btn" class="btn btn-step" onclick="solverController.nextStep()" disabled>
-                            Next <i class="fas fa-chevron-right"></i>
+                        <button id="next-step-btn" class="btn btn-secondary btn-step" disabled title="Next">
+                            <i class="fas fa-chevron-right"></i>
                         </button>
-                        <button id="last-step-btn" class="btn btn-step" onclick="solverController.goToLastStep()" disabled>
-                            Last <i class="fas fa-fast-forward"></i>
+                        <button id="last-step-btn" class="btn btn-secondary btn-step" disabled title="Last">
+                            <i class="fas fa-forward-fast"></i>
                         </button>
                     </div>
                     <div class="speed-control">
-                        <label for="speed-slider">Speed:</label>
-                        <input type="range" id="speed-slider" class="speed-slider" min="0.2" max="3" step="0.1" value="1">
+                        <label for="speed-slider">Speed</label>
+                        <input type="range" id="speed-slider" class="speed-slider" min="0.3" max="3" step="0.1" value="1">
                         <span id="speed-display" class="speed-display">1.0x</span>
                     </div>
-                    <div class="step-info-display">
-                        <span class="step-counter">Step <span id="current-step">0</span> of <span id="total-steps">0</span></span>
-                    </div>
-                </div>
-
-                <!-- Progress bar for solving process -->
-                <div class="progress-container" id="solving-progress" style="display: none;">
-                    <div class="progress-label">Solving puzzle...</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill"></div>
-                    </div>
-                    <div class="progress-status" id="progress-status">Starting...</div>
                 </div>
 
                 <div class="solution-steps-container">
-                    <h3>Move Sequence</h3>
+                    <h3>Move sequence</h3>
                     <div id="solution-steps" class="solution-steps"></div>
                 </div>
 
                 <div class="export-controls">
-                    <button id="copy-solution-btn" class="btn btn-secondary btn-utility" onclick="solverController.copySolution()">
-                        <i class="fas fa-copy"></i> Copy Solution
+                    <button id="copy-solution-btn" class="btn btn-secondary btn-small">
+                        <i class="fas fa-copy"></i> <span>Copy solution</span>
                     </button>
-                    <button id="new-solve-btn" class="btn btn-tertiary btn-utility" onclick="solverController.resetSolver()">
-                        <i class="fas fa-refresh"></i> Reset Solver
+                    <button id="new-solve-btn" class="btn btn-tertiary btn-small">
+                        <i class="fas fa-rotate-left"></i> Reset solver
                     </button>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 
-    <!-- Color Customization Modal -->
+    <!-- Colour customisation -->
     <div id="color-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Customize Colors</h2>
-                <button id="close-modal-btn" class="close-btn">&times;</button>
+                <h2>Colors</h2>
+                <button class="close-btn" data-close aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="color-section">
-                    <div class="color-group">
-                        <label for="bg-color">Background Color</label>
-                        <input type="color" id="bg-color" class="color-picker" value="#1a1a2e">
+                <div class="color-group">
+                    <label for="bg-color">Background</label>
+                    <input type="color" id="bg-color" class="color-picker" value="#262626">
+                </div>
+                <div class="color-group">
+                    <label for="board-bg-color">Board</label>
+                    <input type="color" id="board-bg-color" class="color-picker" value="#3c3c3c">
+                </div>
+                <div class="color-group">
+                    <label for="odd-color">Odd tiles (1, 3, 5…)</label>
+                    <input type="color" id="odd-color" class="color-picker" value="#2b2ba8">
+                </div>
+                <div class="color-group">
+                    <label for="even-color">Even tiles (2, 4, 6…)</label>
+                    <input type="color" id="even-color" class="color-picker" value="#d76b19">
+                </div>
+                <div class="color-group">
+                    <label for="text-color">Text</label>
+                    <input type="color" id="text-color" class="color-picker" value="#f8f9fa">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="reset-colors-btn" class="btn btn-secondary">Reset to default</button>
+                <button id="save-colors-btn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shown while the solver runs -->
+    <div id="loading-modal" class="modal hidden" data-static>
+        <div class="modal-content loading-modal">
+            <div class="modal-body loading-content">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <h3 class="loading-title">Solving…</h3>
+                <div class="progress-bar"><div class="progress-fill indeterminate"></div></div>
+                <div class="solving-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Positions searched</span>
+                        <span class="stat-value" id="solve-nodes">0</span>
                     </div>
-                    <div class="color-group">
-                        <label for="board-bg-color">Game Board Background</label>
-                        <input type="color" id="board-bg-color" class="color-picker" value="#0a1128">
+                    <div class="stat-row">
+                        <span class="stat-label">Depth bound</span>
+                        <span class="stat-value" id="solve-bound">–</span>
                     </div>
-                    <div class="color-group">
-                        <label for="odd-color">Odd Number Tiles (1, 3, 5...)</label>
-                        <input type="color" id="odd-color" class="color-picker" value="#dc143c">
-                    </div>
-                    <div class="color-group">
-                        <label for="even-color">Even Number Tiles (2, 4, 6...)</label>
-                        <input type="color" id="even-color" class="color-picker" value="#f8f9fa">
-                    </div>
-                    <div class="color-group">
-                        <label for="text-color">Text Color</label>
-                        <input type="color" id="text-color" class="color-picker" value="#f8f9fa">
+                    <div class="stat-row">
+                        <span class="stat-label">Elapsed</span>
+                        <span class="stat-value" id="solve-elapsed">0.0s</span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="reset-colors-btn" class="btn btn-secondary">Reset to Default</button>
-                <button id="save-colors-btn" class="btn btn-primary">Apply Colors</button>
+                <button id="cancel-solve-btn" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Loading Modal -->
-    <div id="loading-modal" class="modal" style="display: none;">
-        <div class="modal-content loading-modal">
-            <div class="modal-body">
-                <div class="loading-content">
-                    <div class="loading-spinner">
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                    </div>
-                    <h3 class="loading-title">Solving Puzzle...</h3>
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="solve-progress-fill"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span id="progress-percentage">0%</span>
-                            <span id="progress-details">Initializing solver...</span>
-                        </div>
-                    </div>
-                    <div class="solving-stats">
-                        <div class="stat-row">
-                            <span class="stat-label">Nodes Explored:</span>
-                            <span class="stat-value" id="nodes-explored">0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Current Depth:</span>
-                            <span class="stat-value" id="current-depth">0</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Elapsed Time:</span>
-                            <span class="stat-value" id="elapsed-time">0.0s</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Modal -->
-    <div id="notification-modal" class="modal" style="display: none;">
+    <!-- Messages -->
+    <div id="notification-modal" class="modal hidden">
         <div class="modal-content notification-modal">
             <div class="modal-header">
                 <h2 id="notification-title">Notice</h2>
-                <button class="close-btn" id="close-notification">&times;</button>
+                <button class="close-btn" data-close aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="notification-content" id="notification-content">
-                    Message goes here
-                </div>
+                <p class="notification-content" id="notification-content"></p>
             </div>
             <div class="modal-footer">
-                <button id="notification-ok" class="btn btn-primary">OK</button>
+                <button class="btn btn-primary" data-close>OK</button>
             </div>
         </div>
     </div>

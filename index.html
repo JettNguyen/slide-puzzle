@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slide15</title>
+    <meta name="description" content="A 4x4 sliding number puzzle with a built-in optimal solver.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23d76b19'/%3E%3Ctext x='32' y='43' font-family='system-ui,sans-serif' font-size='32' font-weight='700' text-anchor='middle' fill='%232c3e50'%3E15%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Slide15 Puzzle</h1>
-            <p class="subtitle">Slide the numbers in order!</p>
+            <h1>Slide15</h1>
+            <p class="subtitle">Slide the tiles back into order.</p>
             <div class="header-controls">
                 <a href="solver.html" class="btn btn-tertiary btn-small">
                     <i class="fas fa-brain"></i> Solver
@@ -33,163 +35,140 @@
 
                 <div class="controls">
                     <button id="shuffle-btn" class="btn btn-primary">
-                        <i class="fas fa-random"></i> New Puzzle
+                        <i class="fas fa-shuffle"></i> New Puzzle
                     </button>
                 </div>
             </div>
-
-
         </main>
 
         <footer>
-            <div class="footer-content">
-                <button id="tutorial-trigger" class="tutorial-link">
-                    <i class="fas fa-question-circle"></i> How to Play
-                </button>
-            </div>
+            <button id="tutorial-trigger" class="tutorial-link">
+                <i class="fas fa-circle-question"></i> How to play
+            </button>
         </footer>
     </div>
 
-    <!-- Color customization popup -->
+    <!-- Colour customisation -->
     <div id="color-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Customize Your Colors</h2>
-                <button id="close-modal-btn" class="close-btn">&times;</button>
+                <h2>Colors</h2>
+                <button class="close-btn" data-close aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="color-section">
-                    <div class="color-group">
-                        <label for="bg-color">Background Color</label>
-                        <input type="color" id="bg-color" class="color-picker" value="#1a1a2e">
-                    </div>
-                    <div class="color-group">
-                        <label for="board-bg-color">Game Board Background</label>
-                        <input type="color" id="board-bg-color" class="color-picker" value="#0a1128">
-                    </div>
-                    <div class="color-group">
-                        <label for="odd-color">Odd Number Tiles (1, 3, 5...)</label>
-                        <input type="color" id="odd-color" class="color-picker" value="#dc143c">
-                    </div>
-                    <div class="color-group">
-                        <label for="even-color">Even Number Tiles (2, 4, 6...)</label>
-                        <input type="color" id="even-color" class="color-picker" value="#f8f9fa">
-                    </div>
-                    <div class="color-group">
-                        <label for="text-color">Text Color</label>
-                        <input type="color" id="text-color" class="color-picker" value="#f8f9fa">
-                    </div>
+                <div class="color-group">
+                    <label for="bg-color">Background</label>
+                    <input type="color" id="bg-color" class="color-picker" value="#262626">
+                </div>
+                <div class="color-group">
+                    <label for="board-bg-color">Board</label>
+                    <input type="color" id="board-bg-color" class="color-picker" value="#3c3c3c">
+                </div>
+                <div class="color-group">
+                    <label for="odd-color">Odd tiles (1, 3, 5…)</label>
+                    <input type="color" id="odd-color" class="color-picker" value="#2b2ba8">
+                </div>
+                <div class="color-group">
+                    <label for="even-color">Even tiles (2, 4, 6…)</label>
+                    <input type="color" id="even-color" class="color-picker" value="#d76b19">
+                </div>
+                <div class="color-group">
+                    <label for="text-color">Text</label>
+                    <input type="color" id="text-color" class="color-picker" value="#f8f9fa">
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="reset-colors-btn" class="btn btn-secondary">
-                    <i class="fas fa-refresh"></i> Reset to Default
-                </button>
-                <button id="save-colors-btn" class="btn btn-primary">
-                    <i class="fas fa-check"></i> Apply Colors
-                </button>
+                <button id="reset-colors-btn" class="btn btn-secondary">Reset to default</button>
+                <button id="save-colors-btn" class="btn btn-primary">Save</button>
             </div>
         </div>
     </div>
 
-    <!-- Win Stats Modal -->
-    <div id="win-modal" class="modal" style="display: none;">
+    <!-- Win screen -->
+    <div id="win-modal" class="modal hidden">
         <div class="modal-content win-modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-trophy"></i> Puzzle Solved!</h2>
-                <button class="close-btn" id="close-win-modal">&times;</button>
+                <h2>Solved</h2>
+                <button class="close-btn" data-close aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="win-stats">
                     <div class="stat-item">
-                        <div class="stat-label">Your Moves:</div>
-                        <div class="stat-value" id="player-moves">0</div>
+                        <span class="stat-label">Moves</span>
+                        <span class="stat-value" id="player-moves">0</span>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Time Taken:</div>
-                        <div class="stat-value" id="time-taken">0:00</div>
+                        <span class="stat-label">Time</span>
+                        <span class="stat-value" id="time-taken">0:00</span>
+                    </div>
+                    <div class="stat-item" id="optimal-row" hidden>
+                        <span class="stat-label">Fewest possible</span>
+                        <span class="stat-value" id="optimal-moves">0</span>
                     </div>
                 </div>
-                <div class="win-message" id="win-message">
-                    Great job solving the puzzle!
-                </div>
-
+                <p class="win-message" id="win-message" hidden></p>
             </div>
             <div class="modal-footer">
                 <button id="play-again-btn" class="btn btn-primary">
-                    <i class="fas fa-play"></i> Play Again
+                    <i class="fas fa-shuffle"></i> Play again
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Tutorial Modal -->
+    <!-- How to play -->
     <div id="tutorial-modal" class="modal hidden">
         <div class="modal-content tutorial-modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-graduation-cap"></i> How to Play</h2>
-                <button id="close-tutorial-modal" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h2>How to play</h2>
+                <button class="close-btn" data-close aria-label="Close">&times;</button>
             </div>
             <div class="modal-body tutorial-body">
                 <div class="tutorial-section">
-                    <h3><i class="fas fa-mouse-pointer"></i> Moving Tiles</h3>
-                    <div class="tutorial-content">
-                        <div class="tutorial-text">
-                            <p>• <strong>Drag</strong> a tile or tiles toward the empty space to slide them</p>
-                            <p>• Use <strong>Shuffle</strong> to mix up the puzzle to a new game</p>
-                        </div>
-                    </div>
+                    <h3>Moving tiles</h3>
+                    <p>Tap a tile in the same row or column as the gap to slide it. Dragging works too, and dragging a tile with others in the way slides the whole row.</p>
+                    <p>On a keyboard, the arrow keys slide tiles in that direction.</p>
                 </div>
-                
+
                 <div class="tutorial-section">
-                    <h3><i class="fas fa-trophy"></i> Goal: Solve the Puzzle</h3>
+                    <h3>Goal</h3>
                     <div class="tutorial-content">
-                        <div class="tutorial-text">
-                            <p>Arrange the numbers in order from 1 to 15, with the empty space in the bottom-right corner:</p>
-                        </div>
-                        <div class="tutorial-demo">
-                            <div class="mini-board solved">
-                                <div class="mini-tile">1</div>
-                                <div class="mini-tile">2</div>
-                                <div class="mini-tile">3</div>
-                                <div class="mini-tile">4</div>
-                                <div class="mini-tile">5</div>
-                                <div class="mini-tile">6</div>
-                                <div class="mini-tile">7</div>
-                                <div class="mini-tile">8</div>
-                                <div class="mini-tile">9</div>
-                                <div class="mini-tile">10</div>
-                                <div class="mini-tile">11</div>
-                                <div class="mini-tile">12</div>
-                                <div class="mini-tile">13</div>
-                                <div class="mini-tile">14</div>
-                                <div class="mini-tile">15</div>
-                                <div class="mini-tile empty"></div>
-                            </div>
+                        <p>Arrange the numbers 1 to 15 in order, with the gap in the bottom-right corner.</p>
+                        <div class="mini-board">
+                            <div class="mini-tile">1</div>
+                            <div class="mini-tile">2</div>
+                            <div class="mini-tile">3</div>
+                            <div class="mini-tile">4</div>
+                            <div class="mini-tile">5</div>
+                            <div class="mini-tile">6</div>
+                            <div class="mini-tile">7</div>
+                            <div class="mini-tile">8</div>
+                            <div class="mini-tile">9</div>
+                            <div class="mini-tile">10</div>
+                            <div class="mini-tile">11</div>
+                            <div class="mini-tile">12</div>
+                            <div class="mini-tile">13</div>
+                            <div class="mini-tile">14</div>
+                            <div class="mini-tile">15</div>
+                            <div class="mini-tile empty"></div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="tutorial-tips">
-                    <h4><i class="fas fa-lightbulb"></i> Tips</h4>
+                    <h4>Tips</h4>
                     <ul>
-                        <li>Start by getting the top row (1-4) in place</li>
-                        <li>Work row by row from top to bottom</li>
-                        <li>Use the <strong>Solver</strong> to train!</li>
+                        <li>Solve the top row first, then the second row, then the last two rows column by column.</li>
+                        <li>Stuck? The solver can show the shortest way out of any position.</li>
                     </ul>
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="got-it-btn" class="btn btn-primary">
-                    <i class="fas fa-thumbs-up"></i> Got It!
-                </button>
+                <button class="btn btn-primary" data-close>Got it</button>
             </div>
         </div>
     </div>
 
-    <!-- Load the game logic -->
     <script type="module" src="app.js"></script>
 </body>
 </html>

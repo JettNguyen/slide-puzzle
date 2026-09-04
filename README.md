@@ -1,47 +1,41 @@
-# [15 Slide Puzzle](https://jettnguyen.github.io/Slide15/)
+# [Slide15](https://jettnguyen.github.io/Slide15/)
 
-A web-based 4x4 sliding number puzzle with animations, multi-tile movement, and a solver using the A* pathfinding algorithm.
+A 4x4 sliding number puzzle in plain HTML, CSS and JavaScript, with a solver that finds the shortest solution between any two positions.
 
-## How to Use
+## Playing
 
-### Playing the Game
+- Tap a tile in the same row or column as the gap to slide it. Dragging works too, and dragging a tile with others in the way slides the whole row.
+- Arrow keys slide tiles on a keyboard.
+- **New Puzzle** shuffles the board. When you solve it you'll see your move count and time, along with the fewest moves that would have done it.
+- **Colors** lets you pick your own palette. It's saved in the browser.
 
-1. **Move Tiles**: 
-   - Drag a tile toward the empty space
-   - Or drag multiple aligned tiles at once
-2. **Reset**: Click "Reset" to return to the solved state
+## Solver
 
-### Using the Solver
+Open **Solver** from the main page.
 
-1. **Open Solver**: Click "Solver Mode" to open the solver panel
+1. Set up the **Start** board by dragging tiles onto each other to swap them (or tapping two tiles). **Randomize** gives you a scrambled position.
+2. Set up the **Target** board the same way. It defaults to the solved board.
+3. **Find solution** searches for the shortest path. Step through it with the buttons, play it back at your own speed, or click any move in the list to jump there.
 
-2. **Input Board States**:
-   - Drag the tiles in any solvable configurations
+The solver is iterative-deepening A* with Manhattan distance plus linear conflict, running in a Web Worker so the page stays responsive. Typical shuffles solve in well under a second; uniformly random positions can take a few seconds, and it gives up after a minute.
 
-3. **Find Solution**: Click "Find Solution" to calculate the optimal path
-   - The solver will validate solvability
-   - Solution steps appear below
+## Running locally
 
-5. **Navigate Solution**:
-   - Use "Previous" and "Next" buttons to step through
-   - Click "Play Solution" to auto-play
-   - Click any step in the list to jump to that state
-
-## Board Format
-
-Boards are represented as 16 numbers (0-15) in row-major order:
+The scripts are ES modules, so the files need to be served rather than opened directly:
 
 ```
-Row 1: positions 0-3
-Row 2: positions 4-7
-Row 3: positions 8-11
-Row 4: positions 12-15
+python3 -m http.server
 ```
 
-Example solved state:
-```
- 1  2  3  4
- 5  6  7  8
- 9  10 11 12
- 13 14 15 
-```
+then visit http://localhost:8000.
+
+## Files
+
+| File | Purpose |
+| --- | --- |
+| `index.html`, `app.js` | The game page |
+| `solver.html`, `solver-page.js` | The solver page |
+| `puzzle.js` | Board state and move rules |
+| `board.js` | Interactive board rendering and drag handling |
+| `solver.js`, `solver-worker.js` | Search algorithm and its worker wrapper |
+| `theme.js`, `modal.js`, `board-layout.js` | Shared colour, dialog and layout helpers |
